@@ -1,0 +1,123 @@
+''' Axial coordinates. Use MakeHex or validate before doing arithmetic.
+Structure AxialHex
+    Q As Integer
+    R As Integer
+End Structure
+
+Structure CubeHex
+    Q As Integer
+    R As Integer
+    S As Integer
+End Structure
+
+Structure HexPixel
+    X As Double
+    Y As Double
+End Structure
+
+Private Sub ValidateHex(cell As AxialHex)
+    If cell.Q < -1000000 Or cell.Q > 1000000 Or cell.R < -1000000 Or cell.R > 1000000 Then
+        Throw New InvalidArgumentException("Hex coordinates must lie within +/-1000000")
+    End If
+    Dim s As Integer = 0 - cell.Q - cell.R
+    If s < -1000000 Or s > 1000000 Then Throw New InvalidArgumentException("Hex cube S is outside +/-1000000")
+End Sub
+
+Private Sub ValidateHexLayout(size As Double, originX As Double, originY As Double)
+    If Not (size >= 0.000001 And size <= 1000000.0) Then Throw New InvalidArgumentException("Hex radius must be finite and in 0.000001..1000000")
+    If Not (originX >= -1000000000000.0 And originX <= 1000000000000.0) Then Throw New InvalidArgumentException("Hex origin X is outside bounds")
+    If Not (originY >= -1000000000000.0 And originY <= 1000000000000.0) Then Throw New InvalidArgumentException("Hex origin Y is outside bounds")
+End Sub
+
+Public Function MakeHex(q As Integer, r As Integer) As AxialHex
+    Dim cell As AxialHex
+    cell.Q = q
+    cell.R = r
+    ValidateHex(cell)
+    Return cell
+End Function
+
+Public Function HexToCube(cell As AxialHex) As CubeHex
+    ValidateHex(cell)
+    Dim cube As CubeHex
+    cube.Q = cell.Q
+    cube.R = cell.R
+    cube.S = 0 - cell.Q - cell.R
+    Return cube
+End Function
+
+Public Function CubeToHex(cube As CubeHex) As AxialHex
+    Dim cell As AxialHex = MakeHex(cube.Q, cube.R)
+    If cube.S <> 0 - cell.Q - cell.R Then Throw New InvalidArgumentException("Cube coordinates must sum to zero")
+    Return cell
+End Function
+
+''' Directions: E, NE, NW, W, SW, SE (screen Y points down).
+Public Function HexNeighbor(cell As AxialHex, direction As Integer) As AxialHex
+    ValidateHex(cell)
+    If direction < 0 Or direction > 5 Then Throw New InvalidArgumentException("Hex direction must be 0..5")
+    Dim dq As Array Of Integer = [1, 1, 0, -1, -1, 0]
+    Dim dr As Array Of Integer = [0, -1, -1, 0, 1, 1]
+    Return MakeHex(cell.Q + dq(direction), cell.R + dr(direction))
+End Function
+
+Public Function HexDistance(a As AxialHex, b As AxialHex) As Integer
+    ValidateHex(a)
+    ValidateHex(b)
+    Dim dq As Integer = a.Q - b.Q
+    Dim dr As Integer = a.R - b.R
+    Dim ds As Integer = 0 - dq - dr
+    Return Math.Max(Math.Abs(dq), Math.Max(Math.Abs(dr), Math.Abs(ds)))
+End Function
+
+''' Pointy-top layout. Size is center-to-corner radius; screen Y points down.
+Public Function HexToPixel(cell As AxialHex, size As Double, originX As Double = 0.0, originY As Double = 0.0) As HexPixel
+    ValidateHex(cell)
+    ValidateHexLayout(size, originX, originY)
+    Dim pixel As HexPixel
+    pixel.X = originX + size * Math.Sqrt(3.0) * (cell.Q + cell.R / 2.0)
+    pixel.Y = originY + size * 1.5 * cell.R
+    Return pixel
+End Function
+
+''' Nearest cell using cube rounding; exact boundaries have deterministic ties.
+Public Function PixelToHex(x As Double, y As Double, size As Double, originX As Double = 0.0, originY As Double = 0.0) As AxialHex
+    ValidateHexLayout(size, originX, originY)
+    If Not (x >= -4000000000000.0 And x <= 4000000000000.0 And y >= -4000000000000.0 And y <= 4000000000000.0) Then
+        Throw New InvalidArgumentException("Hex pixel input must be finite and within +/-4e12")
+    End If
+    Dim localX As Double = (x - originX) / size
+    Dim localY As Double = (y - originY) / size
+    Dim q As Double = Math.Sqrt(3.0) / 3.0 * localX - localY / 3.0
+    Dim r As Double = 2.0 / 3.0 * localY
+    Dim s As Double = 0.0 - q - r
+    If Not (q >= -1000001.0 And q <= 1000001.0 And r >= -1000001.0 And r <= 1000001.0 And s >= -1000001.0 And s <= 1000001.0) Then
+        Throw New InvalidArgumentException("Hex pixel maps outside coordinate bounds")
+    End If
+    Dim iq As Integer = Math.Floor(q + 0.5)
+    Dim ir As Integer = Math.Floor(r + 0.5)
+    Dim isValue As Integer = Math.Floor(s + 0.5)
+    Dim qError As Double = Math.Abs(iq - q)
+    Dim rError As Double = Math.Abs(ir - r)
+    Dim sError As Double = Math.Abs(isValue - s)
+    If qError >= rError And qError >= sError Then
+        iq = 0 - ir - isValue
+    ElseIf rError >= sError Then
+        ir = 0 - iq - isValue
+    End If
+    Return MakeHex(iq, ir)
+End Function
+
+''' Six corners, clockwise in screen coordinates, starting at 30 degrees.
+Public Function HexCorners(cell As AxialHex, size As Double, originX As Double = 0.0, originY As Double = 0.0) As Array Of HexPixel
+    Dim center As HexPixel = HexToPixel(cell, size, originX, originY)
+    Dim points() As HexPixel
+    For i As Integer = 0 To 5
+        Dim radians As Double = (30.0 + 60.0 * i) * 3.141592653589793 / 180.0
+        Dim point As HexPixel
+        point.X = center.X + size * Math.Cos(radians)
+        point.Y = center.Y + size * Math.Sin(radians)
+        Array.Append(points, point)
+    Next
+    Return points
+End Function
