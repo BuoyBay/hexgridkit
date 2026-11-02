@@ -1,4 +1,4 @@
-# Axial hex geometry, neighbors, pixel picking
+# Axial hex geometry
 
 Source-only geometry for pointy-top hexagonal grids. `Import hexgridkit` works
 from the source package or sealed archive. There are no native dependencies;
