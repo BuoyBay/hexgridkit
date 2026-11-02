@@ -1,1 +1,1 @@
-{"schema":1,"name":"hexgridkit","version":"0.1.0","description":"Bounded pointy-top axial hex geometry, neighbors, distance and pixel picking"}
+{"schema":1,"name":"hexgridkit","version":"0.1.0","description":"Axial hex geometry, neighbors, pixel picking"}
