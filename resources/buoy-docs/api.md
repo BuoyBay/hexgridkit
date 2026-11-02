@@ -39,5 +39,4 @@ All public operations validate structures, including manually changed fields. Cu
 - [Getting started](getting-started.md)
 - [API reference](api.md)
 
-
 [Full typed API: properties, parameters, defaults, and returns](typed-api.md)

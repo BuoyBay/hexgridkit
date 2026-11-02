@@ -1,6 +1,6 @@
 # Compute axial hex geometry, neighbors and pixel picking
 
-Pure Buoy geometry for pointy-top hexagonal grids. `Import hexgridkit` works
+Source-only geometry for pointy-top hexagonal grids. `Import hexgridkit` works
 from the source package or sealed archive. There are no native dependencies;
 the Canvas demo is a separate consumer.
 
@@ -21,7 +21,7 @@ consumer project for reproducible installs.
 
 ## Example
 
-```buoy
+```basic
 Import hexgridkit
 
 Sub Main()
@@ -55,7 +55,6 @@ On your own machine, install Buoy and run:
 buoy ai init --both
 ```
 
-The generated agent files and editor settings stay local and are ignored by Git.
 
 ## Contributing
 

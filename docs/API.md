@@ -35,11 +35,8 @@ sizes, Double precision cannot distinguish adjacent centers. Use appropriately
 scaled local coordinates when picking; the numeric bounds prevent overflow, not
 loss of precision in extreme layouts.
 
-## Verification and example
+## Grid picking
 
-Maintainers run the private validation suite before release. See the repository README for public build instructions.
-
-See the Canvas example (not included in this repository).
-For pointer selection that survives an invalid pick, see the [getting started recovery example](../resources/buoy-docs/getting-started.md#handle-invalid-inputs).
-The local archive is `packages/hexgridkit-0.1.0.buipkg`; no remote publication
-has been performed. [Provenance and upstream differences](../PROVENANCE.md).
+The [getting-started example](../resources/buoy-docs/getting-started.md#handle-invalid-inputs)
+shows pointer selection that survives an invalid pick. The
+[provenance notes](../PROVENANCE.md) describe upstream API differences.

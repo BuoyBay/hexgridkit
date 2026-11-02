@@ -17,7 +17,7 @@ Place the sealed `hexgridkit-0.1.0.buipkg` archive in your project's `packages/`
 
 Create valid axial cells with `MakeHex`. Pick a center-to-corner radius and an origin, use `HexToPixel` to draw a cell, and use the same radius and origin with `PixelToHex` for pointer picking. Convert to cube coordinates when a three-coordinate representation is useful.
 
-```buoy
+```basic
 Import hexgridkit
 
 Sub Main()
@@ -41,7 +41,7 @@ All public operations validate structures, including manually changed fields. Cu
 
 For pointer picking, keep the previous selection until `PixelToHex` succeeds. A rejected pointer position then leaves the selection usable:
 
-```buoy
+```basic
 Import hexgridkit
 
 Sub Main()

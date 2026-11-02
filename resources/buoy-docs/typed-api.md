@@ -49,8 +49,6 @@ Axial coordinates. Use MakeHex or validate before doing arithmetic.
 | `X` | `Double` | — | — |
 | `Y` | `Double` | — | — |
 
-## HexGridKit functions
-
 ### MakeHex
 
 `Public Function MakeHex(q As Integer, r As Integer) As AxialHex`
